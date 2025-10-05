@@ -48,7 +48,6 @@ function Events:CreateEventFrame()
     self.eventFrame:RegisterEvent("ENCOUNTER_START")
     self.eventFrame:RegisterEvent("ENCOUNTER_END")
     self.eventFrame:RegisterEvent("BOSS_KILL")
-    self.eventFrame:RegisterEvent("UNIT_DIED")
     
     self.eventFrame:SetScript("OnEvent", function(self, event, ...)
         Events:HandleEvent(event, ...)
@@ -100,8 +99,6 @@ function Events:HandleEvent(event, ...)
         self:OnEncounterEnd(...)
     elseif event == "BOSS_KILL" then
         self:OnBossKill(...)
-    elseif event == "UNIT_DIED" then
-        self:OnUnitDied(...)
     elseif event == "ZONE_CHANGED_NEW_AREA" then
         self:OnZoneChanged()
     elseif event == "GROUP_ROSTER_UPDATE" then
@@ -195,15 +192,6 @@ function Events:OnBossKill(bossName)
 end
 
 -- Unit died event
-function Events:OnUnitDied(unitID)
-    -- Check if it's a party member
-    if unitID and (unitID:find("party") or unitID:find("raid")) then
-        local unitName = UnitName(unitID)
-        if unitName then
-            Core.DebugInfo("Party member died - %s", unitName)
-        end
-    end
-end
 
 -- Zone changed event
 function Events:OnZoneChanged()
