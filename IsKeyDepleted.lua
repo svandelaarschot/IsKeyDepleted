@@ -32,22 +32,22 @@ IsKeyDepleted = ns
 --]]
 function ns.Initialize()
     -- Initialize core functionality first
-    ns.Core.Initialize()
+    ns.Core:Initialize()
     
     -- Initialize player data
-    ns.Player.Initialize()
+    ns.Player:Initialize()
     
     -- Initialize event handling
-    ns.Events.Initialize()
+    ns.Events:Initialize()
     
     -- Initialize user interface
-    ns.UI.Initialize()
+    ns.UI:Initialize()
     
     -- Initialize options/settings
-    ns.Options.Initialize()
+    ns.Options:Initialize()
     
     -- Initialize slash commands
-    ns.Commands.Initialize()
+    ns.Commands:Initialize()
     
     -- Notify user of successful initialization
     print("|cff39FF14IsKeyDepleted|r: All modules initialized!")
