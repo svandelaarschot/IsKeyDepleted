@@ -263,10 +263,20 @@ function Options.CreateTimelinePanel()
     desc:SetJustifyH("LEFT")
     desc:SetText("Configure timeline behavior, tracking settings, and timeability thresholds.")
     
-    local yOffset = -60
+    -- Create scrollable frame
+    local scrollFrame = CreateFrame("ScrollFrame", "IsKeyDepletedTimelineScrollFrame", panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
+    scrollFrame:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -30, 50)
+    
+    -- Create content frame
+    local content = CreateFrame("Frame", "IsKeyDepletedTimelineContent", scrollFrame)
+    content:SetSize(580, 800) -- Set a reasonable height
+    scrollFrame:SetScrollChild(content)
+    
+    local yOffset = -20
     
     -- Auto-show timeline checkbox
-    local autoShowCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+    local autoShowCheck = CreateFrame("CheckButton", nil, content, "InterfaceOptionsCheckButtonTemplate")
     autoShowCheck:SetPoint("TOPLEFT", 20, yOffset)
     autoShowCheck.Text:SetText("Auto-show timeline when entering Mythic+")
     autoShowCheck:SetChecked(IsKeyDepletedDB.options and IsKeyDepletedDB.options.autoShowTimeline or true)
@@ -276,7 +286,7 @@ function Options.CreateTimelinePanel()
     end)
     
     -- Auto-show description
-    local autoShowDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local autoShowDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     autoShowDesc:SetPoint("TOPLEFT", autoShowCheck, "BOTTOMLEFT", 20, -5)
     autoShowDesc:SetWidth(540)
     autoShowDesc:SetJustifyH("LEFT")
@@ -286,11 +296,11 @@ function Options.CreateTimelinePanel()
     yOffset = yOffset - 80
     
     -- Death penalty time slider
-    local deathPenaltyLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local deathPenaltyLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     deathPenaltyLabel:SetPoint("TOPLEFT", 20, yOffset)
     deathPenaltyLabel:SetText("Death penalty time (seconds):")
     
-    local deathPenaltySlider = CreateFrame("Slider", nil, panel, "OptionsSliderTemplate")
+    local deathPenaltySlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
     deathPenaltySlider:SetPoint("TOPLEFT", deathPenaltyLabel, "BOTTOMLEFT", 0, -10)
     deathPenaltySlider:SetSize(300, 20)
     deathPenaltySlider:SetMinMaxValues(1, 10)
@@ -311,7 +321,7 @@ function Options.CreateTimelinePanel()
     end)
     
     -- Death penalty description
-    local deathPenaltyDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local deathPenaltyDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     deathPenaltyDesc:SetPoint("TOPLEFT", deathPenaltySlider, "BOTTOMLEFT", 0, -5)
     deathPenaltyDesc:SetWidth(540)
     deathPenaltyDesc:SetJustifyH("LEFT")
@@ -321,12 +331,12 @@ function Options.CreateTimelinePanel()
     yOffset = yOffset - 100
     
     -- Timeability Thresholds Section
-    local thresholdsLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local thresholdsLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     thresholdsLabel:SetPoint("TOPLEFT", 20, yOffset)
     thresholdsLabel:SetText("Timeability Thresholds:")
     thresholdsLabel:SetTextColor(1, 1, 0.5)
     
-    local thresholdsDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local thresholdsDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     thresholdsDesc:SetPoint("TOPLEFT", thresholdsLabel, "BOTTOMLEFT", 0, -5)
     thresholdsDesc:SetWidth(540)
     thresholdsDesc:SetJustifyH("LEFT")
@@ -336,11 +346,11 @@ function Options.CreateTimelinePanel()
     yOffset = yOffset - 50
     
     -- Timeable threshold
-    local timeableLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local timeableLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     timeableLabel:SetPoint("TOPLEFT", 40, yOffset)
     timeableLabel:SetText("Timeable threshold (%):")
     
-    local timeableSlider = CreateFrame("Slider", nil, panel, "OptionsSliderTemplate")
+    local timeableSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
     timeableSlider:SetPoint("TOPLEFT", timeableLabel, "BOTTOMLEFT", 0, -10)
     timeableSlider:SetSize(250, 20)
     timeableSlider:SetMinMaxValues(0.5, 1.0)
@@ -365,11 +375,11 @@ function Options.CreateTimelinePanel()
     yOffset = yOffset - 60
     
     -- Borderline threshold
-    local borderlineLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local borderlineLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     borderlineLabel:SetPoint("TOPLEFT", 40, yOffset)
     borderlineLabel:SetText("Borderline threshold (%):")
     
-    local borderlineSlider = CreateFrame("Slider", nil, panel, "OptionsSliderTemplate")
+    local borderlineSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
     borderlineSlider:SetPoint("TOPLEFT", borderlineLabel, "BOTTOMLEFT", 0, -10)
     borderlineSlider:SetSize(250, 20)
     borderlineSlider:SetMinMaxValues(0.3, 0.9)
@@ -391,8 +401,32 @@ function Options.CreateTimelinePanel()
         borderlineValue:SetText(tostring(math.floor(value * 100)) .. "%")
     end)
     
-    -- Add footer
-    Options.CreateFooter(panel)
+    -- Add footer outside scrollable area
+    local footer = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    footer:SetPoint("BOTTOMLEFT", 16, 16)
+    footer:SetWidth(580)
+    footer:SetJustifyH("LEFT")
+    
+    -- Get dynamic version from .toc file with fallback
+    local version = "0.1"
+    local author = "Alvarín-Silvermoon"
+    
+    -- Try to get metadata, but use fallbacks if it fails
+    if GetAddOnMetadata then
+        local addonName = "IsKeyDepleted"
+        local metadataVersion = GetAddOnMetadata(addonName, "Version")
+        local metadataAuthor = GetAddOnMetadata(addonName, "Author")
+        
+        if metadataVersion and metadataVersion ~= "" then
+            version = metadataVersion
+        end
+        if metadataAuthor and metadataAuthor ~= "" then
+            author = metadataAuthor
+        end
+    end
+    
+    footer:SetText(string.format("|cff39FF14IsKeyDepleted|r v%s by %s | Use /iskd for commands", version, author))
+    footer:SetTextColor(0.6, 0.6, 0.6)
     
     return panel
 end
@@ -416,10 +450,20 @@ function Options.CreateDisplayPanel()
     desc:SetJustifyH("LEFT")
     desc:SetText("Configure display and visual settings for the timeline interface.")
     
-    local yOffset = -60
+    -- Create scrollable frame
+    local scrollFrame = CreateFrame("ScrollFrame", "IsKeyDepletedDisplayScrollFrame", panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
+    scrollFrame:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -30, 50)
+    
+    -- Create content frame
+    local content = CreateFrame("Frame", "IsKeyDepletedDisplayContent", scrollFrame)
+    content:SetSize(580, 800) -- Set a reasonable height
+    scrollFrame:SetScrollChild(content)
+    
+    local yOffset = -20
     
     -- Hide Blizzard tracker checkbox
-    local hideBlizzardCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+    local hideBlizzardCheck = CreateFrame("CheckButton", nil, content, "InterfaceOptionsCheckButtonTemplate")
     hideBlizzardCheck:SetPoint("TOPLEFT", 20, yOffset)
     hideBlizzardCheck.Text:SetText("Hide default Blizzard dungeon tracker")
     hideBlizzardCheck:SetChecked(IsKeyDepletedDB.options and IsKeyDepletedDB.options.hideBlizzardTracker or true)
@@ -429,7 +473,7 @@ function Options.CreateDisplayPanel()
     end)
     
     -- Hide Blizzard description
-    local hideBlizzardDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local hideBlizzardDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     hideBlizzardDesc:SetPoint("TOPLEFT", hideBlizzardCheck, "BOTTOMLEFT", 20, -5)
     hideBlizzardDesc:SetWidth(540)
     hideBlizzardDesc:SetJustifyH("LEFT")
@@ -439,12 +483,12 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 80
     
     -- Timeline size section
-    local sizeLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local sizeLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     sizeLabel:SetPoint("TOPLEFT", 20, yOffset)
     sizeLabel:SetText("Timeline Size:")
     sizeLabel:SetTextColor(1, 1, 0.5)
     
-    local sizeDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local sizeDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sizeDesc:SetPoint("TOPLEFT", sizeLabel, "BOTTOMLEFT", 0, -5)
     sizeDesc:SetWidth(540)
     sizeDesc:SetJustifyH("LEFT")
@@ -454,11 +498,11 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 50
     
     -- Timeline width
-    local widthLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local widthLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     widthLabel:SetPoint("TOPLEFT", 40, yOffset)
     widthLabel:SetText("Timeline width (pixels):")
     
-    local widthSlider = CreateFrame("Slider", nil, panel, "OptionsSliderTemplate")
+    local widthSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
     widthSlider:SetPoint("TOPLEFT", widthLabel, "BOTTOMLEFT", 0, -10)
     widthSlider:SetSize(250, 20)
     widthSlider:SetMinMaxValues(300, 600)
@@ -481,11 +525,11 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 60
     
     -- Timeline height
-    local heightLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local heightLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     heightLabel:SetPoint("TOPLEFT", 40, yOffset)
     heightLabel:SetText("Timeline height (pixels):")
     
-    local heightSlider = CreateFrame("Slider", nil, panel, "OptionsSliderTemplate")
+    local heightSlider = CreateFrame("Slider", nil, content, "OptionsSliderTemplate")
     heightSlider:SetPoint("TOPLEFT", heightLabel, "BOTTOMLEFT", 0, -10)
     heightSlider:SetSize(250, 20)
     heightSlider:SetMinMaxValues(40, 120)
@@ -508,12 +552,12 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 100
     
     -- Timeline markers section
-    local markersLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local markersLabel = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     markersLabel:SetPoint("TOPLEFT", 20, yOffset)
     markersLabel:SetText("Timeline Markers:")
     markersLabel:SetTextColor(1, 1, 0.5)
     
-    local markersDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local markersDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     markersDesc:SetPoint("TOPLEFT", markersLabel, "BOTTOMLEFT", 0, -5)
     markersDesc:SetWidth(540)
     markersDesc:SetJustifyH("LEFT")
@@ -523,7 +567,7 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 50
     
     -- Show death markers checkbox
-    local deathMarkersCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+    local deathMarkersCheck = CreateFrame("CheckButton", nil, content, "InterfaceOptionsCheckButtonTemplate")
     deathMarkersCheck:SetPoint("TOPLEFT", 40, yOffset)
     deathMarkersCheck.Text:SetText("Show death markers")
     deathMarkersCheck:SetChecked(IsKeyDepletedDB.options and IsKeyDepletedDB.options.showDeathMarkers or true)
@@ -533,7 +577,7 @@ function Options.CreateDisplayPanel()
     end)
     
     -- Death markers description
-    local deathMarkersDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local deathMarkersDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     deathMarkersDesc:SetPoint("TOPLEFT", deathMarkersCheck, "BOTTOMLEFT", 20, -5)
     deathMarkersDesc:SetWidth(500)
     deathMarkersDesc:SetJustifyH("LEFT")
@@ -543,7 +587,7 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 60
     
     -- Show boss markers checkbox
-    local bossMarkersCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+    local bossMarkersCheck = CreateFrame("CheckButton", nil, content, "InterfaceOptionsCheckButtonTemplate")
     bossMarkersCheck:SetPoint("TOPLEFT", 40, yOffset)
     bossMarkersCheck.Text:SetText("Show boss kill markers")
     bossMarkersCheck:SetChecked(IsKeyDepletedDB.options and IsKeyDepletedDB.options.showBossMarkers or true)
@@ -553,7 +597,7 @@ function Options.CreateDisplayPanel()
     end)
     
     -- Boss markers description
-    local bossMarkersDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local bossMarkersDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     bossMarkersDesc:SetPoint("TOPLEFT", bossMarkersCheck, "BOTTOMLEFT", 20, -5)
     bossMarkersDesc:SetWidth(500)
     bossMarkersDesc:SetJustifyH("LEFT")
@@ -563,7 +607,7 @@ function Options.CreateDisplayPanel()
     yOffset = yOffset - 60
     
     -- Show time labels checkbox
-    local timeLabelsCheck = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+    local timeLabelsCheck = CreateFrame("CheckButton", nil, content, "InterfaceOptionsCheckButtonTemplate")
     timeLabelsCheck:SetPoint("TOPLEFT", 40, yOffset)
     timeLabelsCheck.Text:SetText("Show time labels")
     timeLabelsCheck:SetChecked(IsKeyDepletedDB.options and IsKeyDepletedDB.options.showTimeLabels or true)
@@ -573,15 +617,39 @@ function Options.CreateDisplayPanel()
     end)
     
     -- Time labels description
-    local timeLabelsDesc = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local timeLabelsDesc = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     timeLabelsDesc:SetPoint("TOPLEFT", timeLabelsCheck, "BOTTOMLEFT", 20, -5)
     timeLabelsDesc:SetWidth(500)
     timeLabelsDesc:SetJustifyH("LEFT")
     timeLabelsDesc:SetText("Shows time labels along the timeline for reference.")
     timeLabelsDesc:SetTextColor(0.7, 0.7, 0.7)
     
-    -- Add footer
-    Options.CreateFooter(panel)
+    -- Add footer outside scrollable area
+    local footer = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    footer:SetPoint("BOTTOMLEFT", 16, 16)
+    footer:SetWidth(580)
+    footer:SetJustifyH("LEFT")
+    
+    -- Get dynamic version from .toc file with fallback
+    local version = "0.1"
+    local author = "Alvarín-Silvermoon"
+    
+    -- Try to get metadata, but use fallbacks if it fails
+    if GetAddOnMetadata then
+        local addonName = "IsKeyDepleted"
+        local metadataVersion = GetAddOnMetadata(addonName, "Version")
+        local metadataAuthor = GetAddOnMetadata(addonName, "Author")
+        
+        if metadataVersion and metadataVersion ~= "" then
+            version = metadataVersion
+        end
+        if metadataAuthor and metadataAuthor ~= "" then
+            author = metadataAuthor
+        end
+    end
+    
+    footer:SetText(string.format("|cff39FF14IsKeyDepleted|r v%s by %s | Use /iskd for commands", version, author))
+    footer:SetTextColor(0.6, 0.6, 0.6)
     
     return panel
 end
@@ -605,16 +673,50 @@ function Options.CreateAbandonPanel()
     desc:SetJustifyH("LEFT")
     desc:SetText("Configure abandon button behavior and confirmation settings.")
     
+    -- Create scrollable frame
+    local scrollFrame = CreateFrame("ScrollFrame", "IsKeyDepletedAbandonScrollFrame", panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
+    scrollFrame:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -30, 50)
+    
+    -- Create content frame
+    local content = CreateFrame("Frame", "IsKeyDepletedAbandonContent", scrollFrame)
+    content:SetSize(580, 400) -- Set a reasonable height
+    scrollFrame:SetScrollChild(content)
+    
     -- Placeholder text
-    local placeholder = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    placeholder:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
-    placeholder:SetWidth(580)
+    local placeholder = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    placeholder:SetPoint("TOPLEFT", 20, -20)
+    placeholder:SetWidth(540)
     placeholder:SetJustifyH("LEFT")
     placeholder:SetText("Abandon settings panel - Coming soon!")
     placeholder:SetTextColor(0.7, 0.7, 0.7)
     
-    -- Add footer
-    Options.CreateFooter(panel)
+    -- Add footer outside scrollable area
+    local footer = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    footer:SetPoint("BOTTOMLEFT", 16, 16)
+    footer:SetWidth(580)
+    footer:SetJustifyH("LEFT")
+    
+    -- Get dynamic version from .toc file with fallback
+    local version = "0.1"
+    local author = "Alvarín-Silvermoon"
+    
+    -- Try to get metadata, but use fallbacks if it fails
+    if GetAddOnMetadata then
+        local addonName = "IsKeyDepleted"
+        local metadataVersion = GetAddOnMetadata(addonName, "Version")
+        local metadataAuthor = GetAddOnMetadata(addonName, "Author")
+        
+        if metadataVersion and metadataVersion ~= "" then
+            version = metadataVersion
+        end
+        if metadataAuthor and metadataAuthor ~= "" then
+            author = metadataAuthor
+        end
+    end
+    
+    footer:SetText(string.format("|cff39FF14IsKeyDepleted|r v%s by %s | Use /iskd for commands", version, author))
+    footer:SetTextColor(0.6, 0.6, 0.6)
     
     return panel
 end
@@ -638,16 +740,50 @@ function Options.CreateDebugPanel()
     desc:SetJustifyH("LEFT")
     desc:SetText("Configure debug mode and logging levels for troubleshooting addon issues.")
     
+    -- Create scrollable frame
+    local scrollFrame = CreateFrame("ScrollFrame", "IsKeyDepletedDebugScrollFrame", panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
+    scrollFrame:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -30, 50)
+    
+    -- Create content frame
+    local content = CreateFrame("Frame", "IsKeyDepletedDebugContent", scrollFrame)
+    content:SetSize(580, 400) -- Set a reasonable height
+    scrollFrame:SetScrollChild(content)
+    
     -- Placeholder text
-    local placeholder = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    placeholder:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -20)
-    placeholder:SetWidth(580)
+    local placeholder = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    placeholder:SetPoint("TOPLEFT", 20, -20)
+    placeholder:SetWidth(540)
     placeholder:SetJustifyH("LEFT")
     placeholder:SetText("Debug settings panel - Coming soon!")
     placeholder:SetTextColor(0.7, 0.7, 0.7)
-
-    -- Add footer
-    Options.CreateFooter(panel)
+    
+    -- Add footer outside scrollable area
+    local footer = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    footer:SetPoint("BOTTOMLEFT", 16, 16)
+    footer:SetWidth(580)
+    footer:SetJustifyH("LEFT")
+    
+    -- Get dynamic version from .toc file with fallback
+    local version = "0.1"
+    local author = "Alvarín-Silvermoon"
+    
+    -- Try to get metadata, but use fallbacks if it fails
+    if GetAddOnMetadata then
+        local addonName = "IsKeyDepleted"
+        local metadataVersion = GetAddOnMetadata(addonName, "Version")
+        local metadataAuthor = GetAddOnMetadata(addonName, "Author")
+        
+        if metadataVersion and metadataVersion ~= "" then
+            version = metadataVersion
+        end
+        if metadataAuthor and metadataAuthor ~= "" then
+            author = metadataAuthor
+        end
+    end
+    
+    footer:SetText(string.format("|cff39FF14IsKeyDepleted|r v%s by %s | Use /iskd for commands", version, author))
+    footer:SetTextColor(0.6, 0.6, 0.6)
     
     return panel
 end

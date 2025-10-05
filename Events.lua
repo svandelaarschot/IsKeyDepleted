@@ -1,5 +1,21 @@
--- IsKeyDepleted Event Handling
--- Event system for tracking key status, deaths, and timeline events
+--[[
+===============================================================================
+Events.lua - IsKeyDepleted Addon Event Handling
+===============================================================================
+This module handles all WoW API events for the addon including:
+- Challenge mode events (start, complete, reset)
+- Player events (death, alive, zone changes)
+- Encounter events (boss kills, encounters)
+- Addon lifecycle events
+
+Author: Alvarín-Silvermoon
+Version: 0.1
+===============================================================================
+--]]
+
+-- ============================================================================
+-- MODULE INITIALIZATION
+-- ============================================================================
 
 -- Get addon namespace
 local addonName, ns = ...
@@ -22,7 +38,14 @@ local UI = ns.UI
 Events.isInitialized = false
 Events.eventFrame = nil
 
--- Initialize the event system
+-- ============================================================================
+-- CORE FUNCTIONS
+-- ============================================================================
+
+--[[
+    Initialize the event system
+    Sets up event frame and registers all required events
+--]]
 function Events:Initialize()
     if self.isInitialized then
         return
@@ -35,6 +58,7 @@ function Events:Initialize()
     if Core and Core.DebugInfo then
         Core.DebugInfo("Event system initialized")
     end
+end
 
 -- Create the event frame
 function Events:CreateEventFrame()
@@ -55,57 +79,50 @@ function Events:CreateEventFrame()
     end)
 end
 
--- Register additional events
+-- Register all events
 function Events:RegisterEvents()
-    -- Register for challenge mode events
-    self.eventFrame:RegisterEvent("CHALLENGE_MODE_LEADERS_UPDATE")
-    self.eventFrame:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE")
-    
-    -- Register for combat events
-    self.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    self.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    
-    -- Register for zone changes
-    self.eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-    self.eventFrame:RegisterEvent("ZONE_CHANGED")
-    
-    -- Register for group events
-    self.eventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-    self.eventFrame:RegisterEvent("PARTY_MEMBER_ENABLE")
-    self.eventFrame:RegisterEvent("PARTY_MEMBER_DISABLE")
+    if self.eventFrame then
+        -- Events are already registered in CreateEventFrame
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Events registered successfully")
+        end
+    end
 end
 
--- Handle incoming events
+-- Handle all events
 function Events:HandleEvent(event, ...)
     if event == "ADDON_LOADED" then
-        local addonName = ...
-        if addonName == Constants.ADDON_NAME then
+        local addon = ...
+        if addon == addonName then
             self:OnAddonLoaded()
         end
     elseif event == "PLAYER_ENTERING_WORLD" then
         self:OnPlayerEnteringWorld()
     elseif event == "CHALLENGE_MODE_START" then
-        self:OnChallengeModeStart(...)
+        self:OnChallengeModeStart()
     elseif event == "CHALLENGE_MODE_COMPLETED" then
-        self:OnChallengeModeCompleted(...)
+        self:OnChallengeModeCompleted()
     elseif event == "CHALLENGE_MODE_RESET" then
-        self:OnChallengeModeReset(...)
+        self:OnChallengeModeReset()
     elseif event == "PLAYER_DEAD" then
-        self:OnPlayerDead(...)
+        self:OnPlayerDead()
     elseif event == "PLAYER_ALIVE" then
-        self:OnPlayerAlive(...)
+        self:OnPlayerAlive()
     elseif event == "ENCOUNTER_START" then
-        self:OnEncounterStart(...)
+        local encounterID, encounterName, difficultyID, groupSize = ...
+        self:OnEncounterStart(encounterID, encounterName, difficultyID, groupSize)
     elseif event == "ENCOUNTER_END" then
-        self:OnEncounterEnd(...)
+        local encounterID, encounterName, difficultyID, groupSize, success = ...
+        self:OnEncounterEnd(encounterID, encounterName, difficultyID, groupSize, success)
     elseif event == "BOSS_KILL" then
-        self:OnBossKill(...)
-    elseif event == "ZONE_CHANGED_NEW_AREA" then
-        self:OnZoneChanged()
-    elseif event == "GROUP_ROSTER_UPDATE" then
-        self:OnGroupRosterUpdate()
+        local bossName = ...
+        self:OnBossKill(bossName)
     end
 end
+
+-- ============================================================================
+-- EVENT HANDLERS
+-- ============================================================================
 
 -- Addon loaded event
 function Events:OnAddonLoaded()
@@ -136,20 +153,25 @@ function Events:OnChallengeModeStart()
         if Core and Core.DebugInfo then
             Core.DebugInfo("Challenge mode started - Key Level %d", keyLevel)
         end
+    end
 end
 
 -- Challenge mode completed event
 function Events:OnChallengeModeCompleted()
     Core:StopKeyTracking("Completed successfully")
+    UI:Hide()
     if Core and Core.DebugInfo then
         Core.DebugInfo("Challenge mode completed!")
+    end
 end
 
 -- Challenge mode reset event
 function Events:OnChallengeModeReset()
     Core:StopKeyTracking("Reset")
+    UI:Hide()
     if Core and Core.DebugInfo then
         Core.DebugInfo("Challenge mode reset")
+    end
 end
 
 -- Player death event
@@ -167,6 +189,7 @@ function Events:OnPlayerDead()
     Core:AddDeath(deathReason)
     if Core and Core.DebugInfo then
         Core.DebugInfo("Player died - %s", deathReason)
+    end
 end
 
 -- Player alive event
@@ -174,6 +197,7 @@ function Events:OnPlayerAlive()
     -- Player has been resurrected
     if Core and Core.DebugInfo then
         Core.DebugInfo("Player resurrected")
+    end
 end
 
 -- Encounter start event
@@ -182,6 +206,7 @@ function Events:OnEncounterStart(encounterID, encounterName, difficultyID, group
         if Core and Core.DebugInfo then
             Core.DebugInfo("Encounter started - %s", encounterName)
         end
+    end
 end
 
 -- Encounter end event
@@ -191,6 +216,7 @@ function Events:OnEncounterEnd(encounterID, encounterName, difficultyID, groupSi
         if Core and Core.DebugInfo then
             Core.DebugInfo("Boss defeated - %s", encounterName)
         end
+    end
 end
 
 -- Boss kill event
@@ -200,9 +226,8 @@ function Events:OnBossKill(bossName)
         if Core and Core.DebugInfo then
             Core.DebugInfo("Boss killed - %s", bossName)
         end
+    end
 end
-
--- Unit died event
 
 -- Zone changed event
 function Events:OnZoneChanged()
@@ -221,6 +246,10 @@ function Events:OnGroupRosterUpdate()
     end
 end
 
+-- ============================================================================
+-- TEST FUNCTIONS
+-- ============================================================================
+
 -- Manual event triggers for testing
 function Events:TestDeath()
     Core:AddDeath("Test death")
@@ -231,13 +260,16 @@ function Events:TestBossKill()
 end
 
 function Events:TestStartKey()
-    Core:StartKeyTracking(15, 123) -- Test with level 15 key
-    UI:Show()
+    Core:StartKeyTracking(15, 1234)
 end
 
 function Events:TestStopKey()
     Core:StopKeyTracking("Test stop")
 end
+
+-- ============================================================================
+-- UTILITY FUNCTIONS
+-- ============================================================================
 
 -- Get event statistics
 function Events:GetEventStats()

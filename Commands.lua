@@ -121,6 +121,8 @@ function Commands:HandleCommand(msg)
         self:ExportData()
     elseif command == "test" then
         self:RunTests()
+    elseif command == "gui" or command == "g" then
+        self:TestGUI()
     elseif command == "tracker" then
         self:ToggleBlizzardTracker()
     elseif command == "help" or command == "h" or command == "" then
@@ -244,6 +246,10 @@ function Commands:RunTests()
     Events:TestStartKey()
     Core.DebugInfo("Test key start executed")
     
+    -- Show UI for testing
+    self:UserPrint("Showing timeline UI...")
+    UI:Show()
+    
     -- Wait a moment
     C_Timer.After(1, function()
         self:UserPrint("Testing death...")
@@ -258,9 +264,83 @@ function Commands:RunTests()
             C_Timer.After(1, function()
                 self:UserPrint("Testing key stop...")
                 Events:TestStopKey()
-                self:UserPrint("Tests completed!")
-                Core.DebugInfo("Test sequence completed successfully - all test events executed")
+                
+                -- Test UI interactions
+                C_Timer.After(1, function()
+                    self:UserPrint("Testing UI interactions...")
+                    self:TestUIInteractions()
+                end)
             end)
+        end)
+    end)
+end
+
+-- Test UI interactions
+function Commands:TestUIInteractions()
+    self:UserPrint("Testing timeline UI interactions...")
+    
+    -- Test timeline click
+    if UI.timelineFrame then
+        self:UserPrint("Testing timeline click...")
+        UI:OnTimelineClick()
+    end
+    
+    -- Test abandon button
+    if UI.abandonButton then
+        self:UserPrint("Testing abandon button...")
+        UI:OnAbandonClick()
+    end
+    
+    -- Test UI toggle
+    C_Timer.After(1, function()
+        self:UserPrint("Testing UI toggle...")
+        UI:Hide()
+        
+        C_Timer.After(1, function()
+            UI:Show()
+            self:UserPrint("Tests completed! Timeline UI should be visible and functional.")
+            Core.DebugInfo("Test sequence completed successfully - all test events executed")
+        end)
+    end)
+end
+
+-- Test GUI specifically
+function Commands:TestGUI()
+    self:UserPrint("=== Testing GUI Components ===")
+    
+    -- Show UI
+    self:UserPrint("Showing timeline UI...")
+    UI:Show()
+    
+    -- Test UI components
+    C_Timer.After(0.5, function()
+        self:UserPrint("Testing UI components...")
+        
+        -- Test timeline frame
+        if UI.timelineFrame then
+            self:UserPrint("✓ Timeline frame found")
+        else
+            self:UserPrint("✗ Timeline frame not found")
+        end
+        
+        -- Test main frame
+        if UI.mainFrame then
+            self:UserPrint("✓ Main frame found")
+        else
+            self:UserPrint("✗ Main frame not found")
+        end
+        
+        -- Test abandon button
+        if UI.abandonButton then
+            self:UserPrint("✓ Abandon button found")
+        else
+            self:UserPrint("✗ Abandon button not found")
+        end
+        
+        -- Test UI interactions
+        C_Timer.After(1, function()
+            self:UserPrint("Testing UI interactions...")
+            self:TestUIInteractions()
         end)
     end)
 end
@@ -284,6 +364,7 @@ function Commands:ShowHelp()
     self:UserPrint("/iskd reset - Reset timeline data")
     self:UserPrint("/iskd export - Export timeline data")
     self:UserPrint("/iskd test - Run test scenarios")
+    self:UserPrint("/iskd gui - Test GUI components")
     self:UserPrint("/iskd tracker - Toggle Blizzard tracker")
     self:UserPrint("/iskd help - Show this help")
     self:UserPrint("=== Shortcuts ===")
@@ -294,6 +375,7 @@ function Commands:ShowHelp()
     self:UserPrint("/iskd a - Abandon key")
     self:UserPrint("/iskd r - Reset timeline")
     self:UserPrint("/iskd e - Export data")
+    self:UserPrint("/iskd g - Test GUI")
     
     Core.DebugInfo("Help command executed - displayed all available commands and shortcuts")
 end

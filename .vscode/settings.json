@@ -5,7 +5,7 @@
         "commands": [
             {
                 "match": ".*\\.(lua|toc)$",
-                "cmd": "xcopy \"${file}\" \"D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\IsKeyDepleted\\\" /Y /Q"
+                "cmd": "xcopy \"${file}\" \"D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\IsKeyDepleted\\\" /Y /Q && powershell -Command \"Write-Host '✅ Sync complete! File synced to WoW AddOns folder' -ForegroundColor Green\""
             }
         ]
     },
@@ -20,6 +20,12 @@
                 "D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\IsKeyDepleted\\",
                 "/Y"
             ],
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": ["/c", "xcopy \"${workspaceFolder}\\*.lua\" \"D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\IsKeyDepleted\\\" /Y && echo Lua files synced to WoW!"]
+                }
+            },
             "group": "build",
             "presentation": {
                 "echo": true,
