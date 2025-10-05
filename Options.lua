@@ -641,7 +641,7 @@ function Options.CreateDebugPanel()
     placeholder:SetJustifyH("LEFT")
     placeholder:SetText("Debug settings panel - Coming soon!")
     placeholder:SetTextColor(0.7, 0.7, 0.7)
-    
+
     -- Add footer
     Options.CreateFooter(panel)
     
@@ -650,3 +650,5 @@ end
 
 -- Assign to namespace
 ns.Options = Options
+
+-- Test

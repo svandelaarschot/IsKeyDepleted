@@ -1,0 +1,69 @@
+{
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 500,
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": ".*\\.(lua|toc)$",
+                "cmd": "xcopy \"${file}\" \"D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\${workspaceFolderBasename}\\\" /Y /Q"
+            }
+        ]
+    },
+    "tasks.version": "2.0.0",
+    "tasks.tasks": [
+        {
+            "label": "Sync to WoW",
+            "type": "shell",
+            "command": "xcopy",
+            "args": [
+                "${workspaceFolder}\\*.lua",
+                "D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\${workspaceFolderBasename}\\",
+                "/Y"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sync TOC to WoW",
+            "type": "shell",
+            "command": "xcopy",
+            "args": [
+                "${workspaceFolder}\\*.toc",
+                "D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\${workspaceFolderBasename}\\",
+                "/Y"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sync All Addon Files",
+            "type": "shell",
+            "command": "xcopy",
+            "args": [
+                "${workspaceFolder}\\*.{lua,toc}",
+                "D:\\World of Warcraft\\_retail_\\Interface\\AddOns\\${workspaceFolderBasename}\\",
+                "/Y"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
