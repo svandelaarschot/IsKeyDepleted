@@ -144,8 +144,16 @@ end
 
 -- Challenge mode start event
 function Events:OnChallengeModeStart()
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("CHALLENGE_MODE_START event fired")
+    end
+    
     local keyLevel = C_ChallengeMode.GetActiveKeystoneLevel()
     local dungeonId = C_ChallengeMode.GetActiveKeystoneMapID()
+    
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Key Level: %s, Dungeon ID: %s", tostring(keyLevel), tostring(dungeonId))
+    end
     
     if keyLevel and dungeonId then
         Core:StartKeyTracking(keyLevel, dungeonId)
@@ -153,24 +161,30 @@ function Events:OnChallengeModeStart()
         if Core and Core.DebugInfo then
             Core.DebugInfo("Challenge mode started - Key Level %d", keyLevel)
         end
+    else
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Challenge mode start detected but no key level/dungeon ID")
+        end
     end
 end
 
 -- Challenge mode completed event
 function Events:OnChallengeModeCompleted()
     Core:StopKeyTracking("Completed successfully")
+    Core:ClearCurrentRun() -- Clear saved run data
     UI:Hide()
     if Core and Core.DebugInfo then
-        Core.DebugInfo("Challenge mode completed!")
+        Core.DebugInfo("Challenge mode completed - run data cleared!")
     end
 end
 
 -- Challenge mode reset event
 function Events:OnChallengeModeReset()
     Core:StopKeyTracking("Reset")
+    Core:ClearCurrentRun() -- Clear saved run data
     UI:Hide()
     if Core and Core.DebugInfo then
-        Core.DebugInfo("Challenge mode reset")
+        Core.DebugInfo("Challenge mode reset - run data cleared")
     end
 end
 
