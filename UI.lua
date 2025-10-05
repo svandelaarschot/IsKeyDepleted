@@ -45,15 +45,10 @@ function UI:CreateMainFrame()
     self.mainFrame = CreateFrame("Frame", "IsKeyDepletedMainFrame", UIParent)
     self.mainFrame:SetSize(450, 120)
     self.mainFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    self.mainFrame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 8, right = 8, top = 8, bottom = 8 }
-    })
-    self.mainFrame:SetBackdropColor(0, 0, 0, 0.8)
+    -- Create a background texture instead of using backdrop
+    local bg = self.mainFrame:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0, 0, 0, 0.8)
     self.mainFrame:SetMovable(true)
     self.mainFrame:EnableMouse(true)
     self.mainFrame:RegisterForDrag("LeftButton")
