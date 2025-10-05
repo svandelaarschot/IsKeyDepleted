@@ -1,0 +1,17 @@
+## Interface: 100207
+## Title: |cff39FF14IsKeyDepleted|r
+## Notes: Track Mythic+ key depletion status, death count, and timeability with interactive timeline.
+## Author: Alvarín-Silvermoon
+## Version: 0.1
+## SavedVariables: IsKeyDepletedDB
+## IconTexture: Interface\Icons\keystone_mythic
+## IconAtlas: keystone_mythic
+
+Core.lua
+Player.lua
+Constants.lua
+Events.lua
+UI.lua
+Commands.lua
+Options.lua
+IsKeyDepleted.lua
