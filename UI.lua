@@ -37,7 +37,7 @@ function UI:Initialize()
     self:HideBlizzardTracker()
     
     self.isInitialized = true
-    ns.Core.DebugInfo("UI system initialized")
+    Core.DebugInfo("UI system initialized")
 end
 
 -- Create the main frame
@@ -343,7 +343,7 @@ function UI:OnTimelineClick()
     end
     
     -- Show timeline details
-    ns.Core.DebugInfo("Timeline clicked - showing details")
+    Core.DebugInfo("Timeline clicked - showing details")
     -- TODO: Implement timeline details popup
 end
 
@@ -413,7 +413,7 @@ function UI:HideBlizzardTracker()
     self.blizzardTrackerHidden = true
     
     if hiddenCount > 0 then
-        ns.Core.DebugInfo("Blizzard dungeon tracker hidden (%d frames)", hiddenCount)
+        Core.DebugInfo("Blizzard dungeon tracker hidden (%d frames)", hiddenCount)
     end
 end
 
@@ -433,7 +433,7 @@ function UI:ShowBlizzardTracker()
     self.blizzardTrackerHidden = false
     
     if shownCount > 0 then
-        ns.Core.DebugInfo("Blizzard dungeon tracker shown (%d frames)", shownCount)
+        Core.DebugInfo("Blizzard dungeon tracker shown (%d frames)", shownCount)
     end
 end
 

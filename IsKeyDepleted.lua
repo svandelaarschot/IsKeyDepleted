@@ -36,6 +36,38 @@ IsKeyDepleted = sharedNamespace
     This function loads all required modules and sets up the addon
 --]]
 function ns.Initialize()
+    -- Debug: Print namespace contents
+    print("|cff39FF14IsKeyDepleted|r: Namespace contents:")
+    for k, v in pairs(ns) do
+        print("|cff39FF14IsKeyDepleted|r:   " .. k .. " (" .. type(v) .. ")")
+    end
+    
+    -- Check if all modules are available
+    if not ns.Core then
+        print("|cffFF0000IsKeyDepleted|r: ERROR - Core module not loaded!")
+        return
+    end
+    
+    if not ns.Events then
+        print("|cffFF0000IsKeyDepleted|r: ERROR - Events module not loaded!")
+        return
+    end
+    
+    if not ns.UI then
+        print("|cffFF0000IsKeyDepleted|r: ERROR - UI module not loaded!")
+        return
+    end
+    
+    if not ns.Options then
+        print("|cffFF0000IsKeyDepleted|r: ERROR - Options module not loaded!")
+        return
+    end
+    
+    if not ns.Commands then
+        print("|cffFF0000IsKeyDepleted|r: ERROR - Commands module not loaded!")
+        return
+    end
+    
     -- Initialize core functionality first
     ns.Core.Initialize()
     

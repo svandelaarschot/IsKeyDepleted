@@ -27,6 +27,9 @@ ns = _G[addonName] or ns
 -- Create player namespace
 ns.Player = ns.Player or {}
 
+-- Local reference for easier access
+local Player = ns.Player
+
 -- Import other modules from namespace
 local Constants = ns.Constants
 local Core = ns.Core
@@ -36,9 +39,9 @@ local Core = ns.Core
 -- ============================================================================
 
 -- Player state
-ns.Player.isInitialized = false
-ns.Player.currentPlayer = nil
-ns.Player.playerData = {}
+Player.isInitialized = false
+Player.currentPlayer = nil
+Player.playerData = {}
 
 -- ============================================================================
 -- INITIALIZATION
@@ -48,7 +51,7 @@ ns.Player.playerData = {}
     Initialize player module
     Sets up player tracking and data management
 --]]
-function ns.Player:Initialize()
+function Player:Initialize()
     if self.isInitialized then
         return
     end
@@ -56,14 +59,14 @@ function ns.Player:Initialize()
     self:InitializePlayerData()
     self.isInitialized = true
     
-    ns.Core.DebugInfo("Player module initialized")
+    Core.DebugInfo("Player module initialized")
 end
 
 --[[
     Initialize player data
     Sets up default player data structure
 --]]
-function ns.Player:InitializePlayerData()
+function Player:InitializePlayerData()
     self.playerData = {
         name = UnitName("player"),
         realm = GetRealmName(),
@@ -84,7 +87,7 @@ end
     Get current player data
     Returns the current player information
 --]]
-function ns.Player:GetPlayerData()
+function Player:GetPlayerData()
     return self.playerData
 end
 
@@ -92,7 +95,7 @@ end
     Update player data
     Refreshes player information
 --]]
-function ns.Player:UpdatePlayerData()
+function Player:UpdatePlayerData()
     self.playerData.name = UnitName("player")
     self.playerData.realm = GetRealmName()
     self.playerData.class = UnitClass("player")
@@ -103,7 +106,7 @@ end
     Check if player is in Mythic+
     Returns true if currently in a Mythic+ dungeon
 --]]
-function ns.Player:IsInMythicPlus()
+function Player:IsInMythicPlus()
     return self.playerData.isInMythicPlus
 end
 
@@ -111,7 +114,7 @@ end
     Set Mythic+ status
     Updates the Mythic+ participation status
 --]]
-function ns.Player:SetMythicPlusStatus(isInMythicPlus)
+function Player:SetMythicPlusStatus(isInMythicPlus)
     self.playerData.isInMythicPlus = isInMythicPlus
 end
 
@@ -119,7 +122,7 @@ end
     Get current key information
     Returns the current Mythic+ key data
 --]]
-function ns.Player:GetCurrentKey()
+function Player:GetCurrentKey()
     return self.playerData.currentKey
 end
 
@@ -127,7 +130,7 @@ end
     Set current key
     Updates the current Mythic+ key information
 --]]
-function ns.Player:SetCurrentKey(keyData)
+function Player:SetCurrentKey(keyData)
     self.playerData.currentKey = keyData
 end
 
@@ -135,7 +138,7 @@ end
     Get death count
     Returns the current death count for this player
 --]]
-function ns.Player:GetDeathCount()
+function Player:GetDeathCount()
     return self.playerData.deaths
 end
 
@@ -143,7 +146,7 @@ end
     Add death
     Increments the death count
 --]]
-function ns.Player:AddDeath()
+function Player:AddDeath()
     self.playerData.deaths = self.playerData.deaths + 1
 end
 
@@ -151,7 +154,7 @@ end
     Reset death count
     Resets the death count to zero
 --]]
-function ns.Player:ResetDeaths()
+function Player:ResetDeaths()
     self.playerData.deaths = 0
 end
 
@@ -159,7 +162,7 @@ end
     Get start time
     Returns when the current run started
 --]]
-function ns.Player:GetStartTime()
+function Player:GetStartTime()
     return self.playerData.startTime
 end
 
@@ -167,7 +170,7 @@ end
     Set start time
     Updates the start time for the current run
 --]]
-function ns.Player:SetStartTime(time)
+function Player:SetStartTime(time)
     self.playerData.startTime = time
 end
 
@@ -179,7 +182,7 @@ end
     Get player name
     Returns the current player's name
 --]]
-function ns.Player:GetPlayerName()
+function Player:GetPlayerName()
     return self.playerData.name
 end
 
@@ -187,7 +190,7 @@ end
     Get player realm
     Returns the current player's realm
 --]]
-function ns.Player:GetPlayerRealm()
+function Player:GetPlayerRealm()
     return self.playerData.realm
 end
 
@@ -195,7 +198,7 @@ end
     Get player class
     Returns the current player's class
 --]]
-function ns.Player:GetPlayerClass()
+function Player:GetPlayerClass()
     return self.playerData.class
 end
 
@@ -203,7 +206,7 @@ end
     Get player level
     Returns the current player's level
 --]]
-function ns.Player:GetPlayerLevel()
+function Player:GetPlayerLevel()
     return self.playerData.level
 end
 
@@ -211,7 +214,7 @@ end
     Reset player data
     Resets all player data to default values
 --]]
-function ns.Player:ResetPlayerData()
+function Player:ResetPlayerData()
     self:InitializePlayerData()
 end
 

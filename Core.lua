@@ -29,6 +29,9 @@ ns = _G[addonName] or ns
 -- Create core namespace
 ns.Core = ns.Core or {}
 
+-- Local reference for easier access
+local Core = ns.Core
+
 -- Import Constants from namespace
 local Constants = ns.Constants
 
@@ -90,7 +93,7 @@ IsKeyDepletedDB = IsKeyDepletedDB or {
     @param message (string) - Message to print
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugPrint(level, message, ...)
+function Core.DebugPrint(level, message, ...)
     local debugMode = IsKeyDepletedDB.options.debugMode
     if not debugMode then return end
     
@@ -121,8 +124,8 @@ end
     @param message (string) - Error message
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugError(message, ...)
-    ns.Core.DebugPrint(DEBUG_LEVELS.ERROR, message, ...)
+function Core.DebugError(message, ...)
+    Core.DebugPrint(DEBUG_LEVELS.ERROR, message, ...)
 end
 
 --[[
@@ -130,8 +133,8 @@ end
     @param message (string) - Warning message
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugWarning(message, ...)
-    ns.Core.DebugPrint(DEBUG_LEVELS.WARNING, message, ...)
+function Core.DebugWarning(message, ...)
+    Core.DebugPrint(DEBUG_LEVELS.WARNING, message, ...)
 end
 
 --[[
@@ -139,8 +142,8 @@ end
     @param message (string) - Info message
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugInfo(message, ...)
-    ns.Core.DebugPrint(DEBUG_LEVELS.INFO, message, ...)
+function Core.DebugInfo(message, ...)
+    Core.DebugPrint(DEBUG_LEVELS.INFO, message, ...)
 end
 
 --[[
@@ -148,8 +151,8 @@ end
     @param message (string) - Debug message
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugDebug(message, ...)
-    ns.Core.DebugPrint(DEBUG_LEVELS.DEBUG, message, ...)
+function Core.DebugDebug(message, ...)
+    Core.DebugPrint(DEBUG_LEVELS.DEBUG, message, ...)
 end
 
 --[[
@@ -157,8 +160,8 @@ end
     @param message (string) - Verbose message
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Core.DebugVerbose(message, ...)
-    ns.Core.DebugPrint(DEBUG_LEVELS.VERBOSE, message, ...)
+function Core.DebugVerbose(message, ...)
+    Core.DebugPrint(DEBUG_LEVELS.VERBOSE, message, ...)
 end
 
 -- ============================================================================
@@ -169,21 +172,21 @@ end
     Set debug level
     @param level (number) - Debug level (1-5)
 --]]
-function ns.Core.SetDebugLevel(level)
+function Core.SetDebugLevel(level)
     if level >= DEBUG_LEVELS.ERROR and level <= DEBUG_LEVELS.VERBOSE then
         IsKeyDepletedDB.options.debugLevel = level
         local levelNames = {"ERROR", "WARNING", "INFO", "DEBUG", "VERBOSE"}
-        ns.Core.DebugInfo("Debug level set to: %s", levelNames[level])
+        Core.DebugInfo("Debug level set to: %s", levelNames[level])
     end
 end
 
 --[[
     Toggle debug mode on/off
 --]]
-function ns.Core.ToggleDebugMode()
+function Core.ToggleDebugMode()
     IsKeyDepletedDB.options.debugMode = not IsKeyDepletedDB.options.debugMode
     local newMode = IsKeyDepletedDB.options.debugMode
-    ns.Core.DebugInfo("Debug mode %s", newMode and "enabled" or "disabled")
+    Core.DebugInfo("Debug mode %s", newMode and "enabled" or "disabled")
 end
 
 -- ============================================================================
@@ -191,14 +194,14 @@ end
 -- ============================================================================
 
 -- Core state
-ns.Core.isInitialized = false
-ns.Core.currentKey = nil
-ns.Core.timelineData = {}
-ns.Core.deathCount = 0
-ns.Core.startTime = 0
-ns.Core.currentTime = 0
-ns.Core.totalTime = 1800 -- 30 minutes default
-ns.Core.timeabilityStatus = Constants.TIMEABILITY.TIMEABLE
+Core.isInitialized = false
+Core.currentKey = nil
+Core.timelineData = {}
+Core.deathCount = 0
+Core.startTime = 0
+Core.currentTime = 0
+Core.totalTime = 1800 -- 30 minutes default
+Core.timeabilityStatus = Constants.TIMEABILITY.TIMEABLE
 
 -- ============================================================================
 -- CORE INITIALIZATION
@@ -208,20 +211,20 @@ ns.Core.timeabilityStatus = Constants.TIMEABILITY.TIMEABLE
     Initialize core module
     Sets up the core functionality and database
 --]]
-function ns.Core.Initialize()
-    if ns.Core.isInitialized then
-        ns.Core.DebugWarning("Core already initialized!")
+function Core.Initialize()
+    if Core.isInitialized then
+        Core.DebugWarning("Core already initialized!")
         return
     end
     
-    ns.Core:ResetTimelineData()
-    ns.Core.isInitialized = true
+    Core:ResetTimelineData()
+    Core.isInitialized = true
     
-    ns.Core.DebugInfo("Core system initialized!")
+    Core.DebugInfo("Core system initialized!")
 end
 
 -- Reset timeline data for a new run
-function ns.Core:ResetTimelineData()
+function Core:ResetTimelineData()
     self.timelineData = {
         startTime = 0,
         currentTime = 0,
@@ -236,11 +239,11 @@ function ns.Core:ResetTimelineData()
     self.currentTime = 0
     self.timeabilityStatus = Constants.TIMEABILITY.TIMEABLE
     
-    ns.Core.DebugDebug("Timeline data reset")
+    Core.DebugDebug("Timeline data reset")
 end
 
 -- Start tracking a new key
-function ns.Core:StartKeyTracking(keyLevel, dungeonId)
+function Core:StartKeyTracking(keyLevel, dungeonId)
     self:ResetTimelineData()
     self.currentKey = {
         level = keyLevel,
@@ -254,13 +257,13 @@ function ns.Core:StartKeyTracking(keyLevel, dungeonId)
     
     self:AddTimelineEvent(Constants.TIMELINE_EVENTS.KEY_START, "Key started", 0)
     
-    ns.Core.DebugInfo("Started tracking key level %d", keyLevel)
+    Core.DebugInfo("Started tracking key level %d", keyLevel)
 end
 
 -- Stop tracking the current key
-function ns.Core:StopKeyTracking(reason)
+function Core:StopKeyTracking(reason)
     if not self.timelineData.isActive then
-        ns.Core.DebugWarning("Attempted to stop tracking when not active")
+        Core.DebugWarning("Attempted to stop tracking when not active")
         return
     end
     
@@ -269,13 +272,13 @@ function ns.Core:StopKeyTracking(reason)
     
     self:AddTimelineEvent(Constants.TIMELINE_EVENTS.KEY_END, reason or "Key ended", self.currentTime)
     
-    ns.Core.DebugInfo("Stopped tracking key - %s", reason or "Unknown reason")
+    Core.DebugInfo("Stopped tracking key - %s", reason or "Unknown reason")
 end
 
 -- Add a death to the timeline
-function ns.Core:AddDeath(reason)
+function Core:AddDeath(reason)
     if not self.timelineData.isActive then
-        ns.Core.DebugWarning("Attempted to add death when not tracking")
+        Core.DebugWarning("Attempted to add death when not tracking")
         return
     end
     
@@ -294,13 +297,13 @@ function ns.Core:AddDeath(reason)
     -- Update timeability status
     self:UpdateTimeabilityStatus()
     
-    ns.Core.DebugInfo("Death #%d at %s", self.deathCount, self:FormatTime(self.currentTime))
+    Core.DebugInfo("Death #%d at %s", self.deathCount, self:FormatTime(self.currentTime))
 end
 
 -- Add a boss kill to the timeline
-function ns.Core:AddBossKill(bossName)
+function Core:AddBossKill(bossName)
     if not self.timelineData.isActive then
-        ns.Core.DebugWarning("Attempted to add boss kill when not tracking")
+        Core.DebugWarning("Attempted to add boss kill when not tracking")
         return
     end
     
@@ -318,11 +321,11 @@ function ns.Core:AddBossKill(bossName)
     -- Update timeability status
     self:UpdateTimeabilityStatus()
     
-    ns.Core.DebugInfo("Boss killed: %s at %s", bossName, self:FormatTime(self.currentTime))
+    Core.DebugInfo("Boss killed: %s at %s", bossName, self:FormatTime(self.currentTime))
 end
 
 -- Add a timeline event
-function ns.Core:AddTimelineEvent(eventType, description, time)
+function Core:AddTimelineEvent(eventType, description, time)
     local event = {
         type = eventType,
         description = description,
@@ -331,11 +334,11 @@ function ns.Core:AddTimelineEvent(eventType, description, time)
     }
     
     table.insert(self.timelineData.events, event)
-    ns.Core.DebugVerbose("Timeline event added: %s at %s", description, self:FormatTime(time))
+    Core.DebugVerbose("Timeline event added: %s at %s", description, self:FormatTime(time))
 end
 
 -- Update timeability status based on current progress
-function ns.Core:UpdateTimeabilityStatus()
+function Core:UpdateTimeabilityStatus()
     if not self.timelineData.isActive then
         return
     end
@@ -358,27 +361,27 @@ function ns.Core:UpdateTimeabilityStatus()
     end
     
     if oldStatus ~= self.timeabilityStatus then
-        ns.Core.DebugInfo("Timeability status changed: %s -> %s", oldStatus, self.timeabilityStatus)
+        Core.DebugInfo("Timeability status changed: %s -> %s", oldStatus, self.timeabilityStatus)
     end
 end
 
 -- Get current timeability status
-function ns.Core:GetTimeabilityStatus()
+function Core:GetTimeabilityStatus()
     return self.timeabilityStatus
 end
 
 -- Get death count
-function ns.Core:GetDeathCount()
+function Core:GetDeathCount()
     return self.deathCount
 end
 
 -- Get death penalty time
-function ns.Core:GetDeathPenaltyTime()
+function Core:GetDeathPenaltyTime()
     return self.deathCount * Constants.DEATH_PENALTY_SECONDS
 end
 
 -- Get remaining time
-function ns.Core:GetRemainingTime()
+function Core:GetRemainingTime()
     if not self.timelineData.isActive then
         return 0
     end
@@ -391,12 +394,12 @@ function ns.Core:GetRemainingTime()
 end
 
 -- Get timeline data for UI
-function ns.Core:GetTimelineData()
+function Core:GetTimelineData()
     return self.timelineData
 end
 
 -- Get current progress percentage
-function ns.Core:GetProgressPercentage()
+function Core:GetProgressPercentage()
     if not self.timelineData.isActive then
         return 0
     end
@@ -406,32 +409,32 @@ function ns.Core:GetProgressPercentage()
 end
 
 -- Check if abandon button should be shown
-function ns.Core:ShouldShowAbandonButton()
+function Core:ShouldShowAbandonButton()
     return self.timeabilityStatus == Constants.TIMEABILITY.BORDERLINE or 
            self.timeabilityStatus == Constants.TIMEABILITY.NOT_TIMEABLE
 end
 
 -- Execute abandon command
-function ns.Core:ExecuteAbandon()
+function Core:ExecuteAbandon()
     if self:ShouldShowAbandonButton() then
         self:StopKeyTracking("Abandoned by player")
         -- Execute the abandon command
         RunMacroText("/abandon")
-        ns.Core.DebugInfo("Abandoning key...")
+        Core.DebugInfo("Abandoning key...")
     else
-        ns.Core.DebugWarning("Abandon button should not be shown, ignoring abandon request")
+        Core.DebugWarning("Abandon button should not be shown, ignoring abandon request")
     end
 end
 
 -- Format time for display
-function ns.Core:FormatTime(seconds)
+function Core:FormatTime(seconds)
     local minutes = math.floor(seconds / 60)
     local secs = math.floor(seconds % 60)
     return string.format("%d:%02d", minutes, secs)
 end
 
 -- Get timeline statistics
-function ns.Core:GetTimelineStats()
+function Core:GetTimelineStats()
     return {
         totalTime = self.totalTime,
         currentTime = self.currentTime,
@@ -445,7 +448,7 @@ function ns.Core:GetTimelineStats()
 end
 
 -- Export timeline data
-function ns.Core:ExportTimelineData()
+function Core:ExportTimelineData()
     local exportData = {
         version = 1,
         timestamp = GetTime(),
@@ -454,14 +457,14 @@ function ns.Core:ExportTimelineData()
         stats = self:GetTimelineStats()
     }
     
-    ns.Core.DebugDebug("Timeline data exported")
+    Core.DebugDebug("Timeline data exported")
     return exportData
 end
 
 -- Save timeline data to SavedVariables
-function ns.Core:SaveTimelineData()
+function Core:SaveTimelineData()
     if not self.timelineData.isActive then
-        ns.Core.DebugWarning("Attempted to save timeline data when not active")
+        Core.DebugWarning("Attempted to save timeline data when not active")
         return
     end
     
@@ -483,40 +486,40 @@ function ns.Core:SaveTimelineData()
         IsKeyDepletedDB.statistics.bestTime = self.currentTime
     end
     
-    ns.Core.DebugInfo("Timeline data saved to history")
+    Core.DebugInfo("Timeline data saved to history")
 end
 
 -- Load timeline data from SavedVariables
-function ns.Core:LoadTimelineData()
+function Core:LoadTimelineData()
     return IsKeyDepletedDB.timelineHistory
 end
 
 -- Get statistics
-function ns.Core:GetStatistics()
+function Core:GetStatistics()
     return IsKeyDepletedDB.statistics
 end
 
 -- Get settings
-function ns.Core:GetSettings()
+function Core:GetSettings()
     return IsKeyDepletedDB.settings
 end
 
 -- Update settings
-function ns.Core:UpdateSettings(newSettings)
+function Core:UpdateSettings(newSettings)
     for key, value in pairs(newSettings) do
         IsKeyDepletedDB.settings[key] = value
     end
-    ns.Core.DebugInfo("Settings updated")
+    Core.DebugInfo("Settings updated")
 end
 
 -- Update core system (called regularly)
-function ns.Core:Update()
+function Core:Update()
     if not self.timelineData.isActive then
         return
     end
     
     self:UpdateTimeabilityStatus()
-    ns.Core.DebugVerbose("Core update - Status: %s, Deaths: %d, Time: %s", 
+    Core.DebugVerbose("Core update - Status: %s, Deaths: %d, Time: %s", 
         self.timeabilityStatus, self.deathCount, self:FormatTime(self.currentTime))
 end
 

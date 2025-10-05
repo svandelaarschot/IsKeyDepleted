@@ -26,6 +26,9 @@ ns = _G[addonName] or ns
 -- Create commands namespace
 ns.Commands = ns.Commands or {}
 
+-- Local reference for easier access
+local Commands = ns.Commands
+
 -- Make Commands globally accessible for slash commands
 _G.IsKeyDepletedCommands = ns.Commands
 
@@ -45,19 +48,19 @@ local Events = ns.Events
     @param message (string) - Message to print
     @param ... (any) - Additional arguments for string formatting
 --]]
-function ns.Commands:UserPrint(message, ...)
+function Commands:UserPrint(message, ...)
     local formattedMessage = string.format(message, ...)
     print("|cff39FF14IsKeyDepleted|r: " .. formattedMessage)
 end
 
 -- Initialize the command system
-function ns.Commands:Initialize()
+function Commands:Initialize()
     self:RegisterSlashCommands()
-    ns.Core.DebugInfo("Command system initialized")
+    Core.DebugInfo("Command system initialized")
 end
 
 -- Register slash commands
-function ns.Commands:RegisterSlashCommands()
+function Commands:RegisterSlashCommands()
     -- Main command
     SLASH_ISKEYDEPLETED1 = "/" .. Constants.COMMANDS.MAIN
     SLASH_ISKEYDEPLETED2 = "/iskd"
@@ -71,16 +74,16 @@ function ns.Commands:RegisterSlashCommands()
         end
     end
     
-    ns.Core.DebugInfo("Slash commands registered: /%s, /iskd, /isk", Constants.COMMANDS.MAIN)
+    Core.DebugInfo("Slash commands registered: /%s, /iskd, /isk", Constants.COMMANDS.MAIN)
 end
 
 -- Handle slash commands
-function ns.Commands:HandleCommand(msg)
-    ns.Core.DebugInfo("Slash command received: '%s'", msg or "nil")
+function Commands:HandleCommand(msg)
+    Core.DebugInfo("Slash command received: '%s'", msg or "nil")
     local args = self:ParseCommand(msg)
     local command = args[1] and args[1]:lower() or ""
     
-    ns.Core.DebugInfo("Parsed command: '%s'", command)
+    Core.DebugInfo("Parsed command: '%s'", command)
     
     if command == "toggle" or command == "t" then
         self:ToggleUI()
@@ -103,12 +106,12 @@ function ns.Commands:HandleCommand(msg)
     elseif command == "help" or command == "h" or command == "" then
         self:ShowHelp()
     else
-        ns.Core.DebugWarning("Unknown command: %s. Use /iskd help for available commands.", command or "nil")
+        Core.DebugWarning("Unknown command: %s. Use /iskd help for available commands.", command or "nil")
     end
 end
 
 -- Parse command arguments
-function ns.Commands:ParseCommand(msg)
+function Commands:ParseCommand(msg)
     local args = {}
     for word in msg:gmatch("%S+") do
         table.insert(args, word)
@@ -117,29 +120,29 @@ function ns.Commands:ParseCommand(msg)
 end
 
 -- Toggle UI
-function ns.Commands:ToggleUI()
+function Commands:ToggleUI()
     UI:Toggle()
-    ns.Core.DebugInfo("UI toggled")
+    Core.DebugInfo("UI toggled")
 end
 
 -- Show UI
-function ns.Commands:ShowUI()
+function Commands:ShowUI()
     UI:Show()
-    ns.Core.DebugInfo("UI shown")
+    Core.DebugInfo("UI shown")
 end
 
 -- Hide UI
-function ns.Commands:HideUI()
+function Commands:HideUI()
     UI:Hide()
-    ns.Core.DebugInfo("UI hidden")
+    Core.DebugInfo("UI hidden")
 end
 
 -- Show status
-function ns.Commands:ShowStatus()
+function Commands:ShowStatus()
     local stats = Core:GetTimelineStats()
     local timelineData = Core:GetTimelineData()
     
-    ns.Core.DebugInfo("Status command executed - gathering timeline data")
+    Core.DebugInfo("Status command executed - gathering timeline data")
     
     self:UserPrint("=== Status Report ===")
     self:UserPrint("Timeability: %s", stats.timeabilityStatus)
@@ -162,35 +165,35 @@ function ns.Commands:ShowStatus()
         end
     end
     
-    ns.Core.DebugInfo("Status report displayed - %d deaths, %d bosses, %s timeability", 
+    Core.DebugInfo("Status report displayed - %d deaths, %d bosses, %s timeability", 
         stats.deathCount, #timelineData.bosses, stats.timeabilityStatus)
 end
 
 -- Abandon key
-function ns.Commands:AbandonKey()
-    ns.Core.DebugInfo("Abandon command executed - checking if abandon is allowed")
+function Commands:AbandonKey()
+    Core.DebugInfo("Abandon command executed - checking if abandon is allowed")
     
     if Core:ShouldShowAbandonButton() then
         Core:ExecuteAbandon()
         self:UserPrint("Abandoning key...")
-        ns.Core.DebugInfo("Abandon key command executed - key was not timeable")
+        Core.DebugInfo("Abandon key command executed - key was not timeable")
     else
         self:UserPrint("Key is still timeable! Abandon button not available.")
-        ns.Core.DebugWarning("Abandon requested but key is still timeable - status: %s", Core:GetTimeabilityStatus())
+        Core.DebugWarning("Abandon requested but key is still timeable - status: %s", Core:GetTimeabilityStatus())
     end
 end
 
 -- Reset timeline
-function ns.Commands:ResetTimeline()
-    ns.Core.DebugInfo("Reset command executed - clearing timeline data")
+function Commands:ResetTimeline()
+    Core.DebugInfo("Reset command executed - clearing timeline data")
     Core:ResetTimelineData()
     self:UserPrint("Timeline reset")
-    ns.Core.DebugInfo("Timeline reset command executed - all data cleared")
+    Core.DebugInfo("Timeline reset command executed - all data cleared")
 end
 
 -- Export data
-function ns.Commands:ExportData()
-    ns.Core.DebugInfo("Export command executed - gathering timeline data for export")
+function Commands:ExportData()
+    Core.DebugInfo("Export command executed - gathering timeline data for export")
     local exportData = Core:ExportTimelineData()
     
     self:UserPrint("=== Export Data ===")
@@ -206,52 +209,52 @@ function ns.Commands:ExportData()
     self:UserPrint("Bosses: %d", #exportData.timeline.bosses)
     self:UserPrint("Events: %d", #exportData.timeline.events)
     
-    ns.Core.DebugInfo("Data export completed - %d deaths, %d bosses, %d events, version %d", 
+    Core.DebugInfo("Data export completed - %d deaths, %d bosses, %d events, version %d", 
         #exportData.timeline.deaths, #exportData.timeline.bosses, #exportData.timeline.events, exportData.version)
 end
 
 -- Run tests
-function ns.Commands:RunTests()
-    ns.Core.DebugInfo("Test command executed - starting test sequence")
+function Commands:RunTests()
+    Core.DebugInfo("Test command executed - starting test sequence")
     self:UserPrint("=== Running Tests ===")
-    ns.Core.DebugInfo("Starting test sequence - will test key start, death, boss kill, and key stop")
+    Core.DebugInfo("Starting test sequence - will test key start, death, boss kill, and key stop")
     
     -- Test start key
     self:UserPrint("Testing key start...")
     Events:TestStartKey()
-    ns.Core.DebugInfo("Test key start executed")
+    Core.DebugInfo("Test key start executed")
     
     -- Wait a moment
     C_Timer.After(1, function()
         self:UserPrint("Testing death...")
         Events:TestDeath()
-        ns.Core.DebugInfo("Test death executed")
+        Core.DebugInfo("Test death executed")
         
         C_Timer.After(1, function()
             self:UserPrint("Testing boss kill...")
             Events:TestBossKill()
-            ns.Core.DebugInfo("Test boss kill executed")
+            Core.DebugInfo("Test boss kill executed")
             
             C_Timer.After(1, function()
                 self:UserPrint("Testing key stop...")
                 Events:TestStopKey()
                 self:UserPrint("Tests completed!")
-                ns.Core.DebugInfo("Test sequence completed successfully - all test events executed")
+                Core.DebugInfo("Test sequence completed successfully - all test events executed")
             end)
         end)
     end)
 end
 
 -- Toggle Blizzard tracker
-function ns.Commands:ToggleBlizzardTracker()
+function Commands:ToggleBlizzardTracker()
     UI:ToggleBlizzardTracker()
     local status = UI:IsBlizzardTrackerHidden() and "hidden" or "shown"
     self:UserPrint("Blizzard tracker %s", status)
-    ns.Core.DebugInfo("Blizzard tracker toggled - %s (user requested)", status)
+    Core.DebugInfo("Blizzard tracker toggled - %s (user requested)", status)
 end
 
 -- Show help
-function ns.Commands:ShowHelp()
+function Commands:ShowHelp()
     self:UserPrint("=== Available Commands ===")
     self:UserPrint("/iskd toggle - Toggle the UI")
     self:UserPrint("/iskd show - Show the UI")
@@ -272,7 +275,7 @@ function ns.Commands:ShowHelp()
     self:UserPrint("/iskd r - Reset timeline")
     self:UserPrint("/iskd e - Export data")
     
-    ns.Core.DebugInfo("Help command executed - displayed all available commands and shortcuts")
+    Core.DebugInfo("Help command executed - displayed all available commands and shortcuts")
 end
 
 -- Assign to namespace

@@ -26,6 +26,12 @@ ns = _G[addonName] or ns
 -- Create options namespace
 ns.Options = ns.Options or {}
 
+-- Local reference for easier access
+local Options = ns.Options
+
+-- Import other modules from namespace
+local Core = ns.Core
+
 -- ============================================================================
 -- DEFAULT CONFIGURATION
 -- ============================================================================
@@ -71,7 +77,7 @@ local defaultOptions = {
     Create a footer for settings panels
     @param panel (Frame) - The panel to add the footer to
 --]]
-function ns.Options.CreateFooter(panel)
+function Options.CreateFooter(panel)
     local footer = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     footer:SetPoint("BOTTOMLEFT", 16, 16)
     footer:SetWidth(580)
@@ -103,7 +109,7 @@ end
     Initialize options with default values if they don't exist
     This ensures all options are properly set when the addon loads
 --]]
-function ns.Options.InitializeOptions()
+function Options.InitializeOptions()
     if not IsKeyDepletedDB.options then
         IsKeyDepletedDB.options = {}
     end
@@ -120,7 +126,7 @@ end
     Initialize options system
     Sets up default options if they don't exist in the saved variables
 --]]
-function ns.Options.Initialize()
+function Options.Initialize()
     -- Create options table if it doesn't exist
     if not IsKeyDepletedDB.options then
         IsKeyDepletedDB.options = {}
@@ -133,7 +139,7 @@ function ns.Options.Initialize()
         end
     end
     
-    ns.Core.DebugInfo("Options initialized!")
+    Core.DebugInfo("Options initialized!")
 end
 
 --[[
@@ -141,7 +147,7 @@ end
     @param key (string) - The option key to set
     @param value (any) - The value to set
 --]]
-function ns.Options.SetOption(key, value)
+function Options.SetOption(key, value)
     -- Ensure options table exists
     if IsKeyDepletedDB.options then
         IsKeyDepletedDB.options[key] = value
@@ -153,7 +159,7 @@ end
     @param key (string) - The option key to retrieve
     @return (any) - The option value or default if not set
 --]]
-function ns.Options.GetOption(key)
+function Options.GetOption(key)
     -- Return saved value if it exists
     if IsKeyDepletedDB.options then
         return IsKeyDepletedDB.options[key]
@@ -170,10 +176,10 @@ end
     Register settings with WoW interface
     Creates the main settings panel and registers it with WoW's settings system
 --]]
-function ns.Options.RegisterSettings()
+function Options.RegisterSettings()
     if Settings then
         -- Initialize options with default values
-        ns.Options.InitializeOptions()
+        Options.InitializeOptions()
         
         -- Create root panel
         local rootPanel = CreateFrame("Frame", "IsKeyDepletedRootPanel")
@@ -210,13 +216,13 @@ function ns.Options.RegisterSettings()
         usageGuide:SetTextColor(0.9, 0.9, 0.9)
         
         -- Add footer to main panel
-        ns.Options.CreateFooter(rootPanel)
+        Options.CreateFooter(rootPanel)
         
         -- Create subpanels (placeholders for now)
-        local timelinePanel = ns.Options.CreateTimelinePanel()
-        local displayPanel = ns.Options.CreateDisplayPanel()
-        local abandonPanel = ns.Options.CreateAbandonPanel()
-        local debugPanel = ns.Options.CreateDebugPanel()
+        local timelinePanel = Options.CreateTimelinePanel()
+        local displayPanel = Options.CreateDisplayPanel()
+        local abandonPanel = Options.CreateAbandonPanel()
+        local debugPanel = Options.CreateDebugPanel()
         
         -- Register as addon category with subpanels
         local root = Settings.RegisterCanvasLayoutCategory(rootPanel, rootPanel.name)
@@ -226,7 +232,7 @@ function ns.Options.RegisterSettings()
         Settings.RegisterCanvasLayoutSubcategory(root, debugPanel, debugPanel.name)
         Settings.RegisterAddOnCategory(root)
         
-        ns.Core.DebugInfo("Settings registered with WoW interface")
+        Core.DebugInfo("Settings registered with WoW interface")
     end
 end
 
@@ -237,7 +243,7 @@ end
 --[[
     Create Timeline Settings Panel
 --]]
-function ns.Options.CreateTimelinePanel()
+function Options.CreateTimelinePanel()
     local panel = CreateFrame("Frame", "IsKeyDepletedTimelinePanel")
     panel.name = "Timeline"
     
@@ -382,7 +388,7 @@ function ns.Options.CreateTimelinePanel()
     end)
     
     -- Add footer
-    ns.Options.CreateFooter(panel)
+    Options.CreateFooter(panel)
     
     return panel
 end
@@ -390,7 +396,7 @@ end
 --[[
     Create Display Settings Panel
 --]]
-function ns.Options.CreateDisplayPanel()
+function Options.CreateDisplayPanel()
     local panel = CreateFrame("Frame", "IsKeyDepletedDisplayPanel")
     panel.name = "Display"
     
@@ -571,7 +577,7 @@ function ns.Options.CreateDisplayPanel()
     timeLabelsDesc:SetTextColor(0.7, 0.7, 0.7)
     
     -- Add footer
-    ns.Options.CreateFooter(panel)
+    Options.CreateFooter(panel)
     
     return panel
 end
@@ -579,7 +585,7 @@ end
 --[[
     Create Abandon Settings Panel (Placeholder)
 --]]
-function ns.Options.CreateAbandonPanel()
+function Options.CreateAbandonPanel()
     local panel = CreateFrame("Frame", "IsKeyDepletedAbandonPanel")
     panel.name = "Abandon"
     
@@ -604,7 +610,7 @@ function ns.Options.CreateAbandonPanel()
     placeholder:SetTextColor(0.7, 0.7, 0.7)
     
     -- Add footer
-    ns.Options.CreateFooter(panel)
+    Options.CreateFooter(panel)
     
     return panel
 end
@@ -612,7 +618,7 @@ end
 --[[
     Create Debug Settings Panel (Placeholder)
 --]]
-function ns.Options.CreateDebugPanel()
+function Options.CreateDebugPanel()
     local panel = CreateFrame("Frame", "IsKeyDepletedDebugPanel")
     panel.name = "Debug"
     
@@ -637,7 +643,7 @@ function ns.Options.CreateDebugPanel()
     placeholder:SetTextColor(0.7, 0.7, 0.7)
     
     -- Add footer
-    ns.Options.CreateFooter(panel)
+    Options.CreateFooter(panel)
     
     return panel
 end
