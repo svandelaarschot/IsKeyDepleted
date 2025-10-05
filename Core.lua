@@ -23,6 +23,9 @@ Version: 0.1
 -- Get addon namespace
 local addonName, ns = ...
 
+-- Use shared namespace
+ns = _G[addonName] or ns
+
 -- Create core namespace
 ns.Core = ns.Core or {}
 
@@ -516,3 +519,6 @@ function ns.Core:Update()
     ns.Core.DebugVerbose("Core update - Status: %s, Deaths: %d, Time: %s", 
         self.timeabilityStatus, self.deathCount, self:FormatTime(self.currentTime))
 end
+
+-- Assign to namespace
+ns.Core = Core

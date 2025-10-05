@@ -1,7 +1,34 @@
--- IsKeyDepleted Constants
--- Configuration values and constants for the addon
+--[[
+================================================================================
+Constants.lua - IsKeyDepleted Addon Constants
+================================================================================
+This module defines all constants and configuration values for the addon including:
+- Addon information and metadata
+- Key status and timeability constants
+- UI configuration and colors
+- Timeline settings and thresholds
+- Event types and command definitions
 
-local Constants = {}
+Author: Alvarín-Silvermoon
+Version: 0.1
+================================================================================
+--]]
+
+-- ============================================================================
+-- MODULE INITIALIZATION
+-- ============================================================================
+
+-- Get addon namespace
+local addonName, ns = ...
+
+-- Use shared namespace
+ns = _G[addonName] or ns
+
+-- Create constants namespace
+ns.Constants = ns.Constants or {}
+
+-- Local reference for easier access
+local Constants = ns.Constants
 
 -- Addon Information
 Constants.ADDON_NAME = "IsKeyDepleted"
@@ -132,8 +159,5 @@ Constants.BLIZZARD_TRACKER = {
     }
 }
 
--- Make Constants available in namespace
-local addonName, ns = ...
-ns.Constants = Constants
-
-return Constants
+-- Constants are already available in ns.Constants
+-- No need for additional namespace assignment

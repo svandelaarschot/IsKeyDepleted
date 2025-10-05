@@ -1,11 +1,19 @@
 -- IsKeyDepleted Event Handling
 -- Event system for tracking key status, deaths, and timeline events
 
-local addonName = "IsKeyDepleted"
-local Events = {}
+-- Get addon namespace
+local addonName, ns = ...
+
+-- Use shared namespace
+ns = _G[addonName] or ns
+
+-- Create events namespace
+ns.Events = ns.Events or {}
+
+-- Local reference for easier access
+local Events = ns.Events
 
 -- Import other modules from namespace
-local addonName, ns = ...
 local Constants = ns.Constants
 local Core = ns.Core
 local UI = ns.UI
@@ -238,8 +246,5 @@ function Events:GetEventStats()
     }
 end
 
--- Make Events available in namespace
-local addonName, ns = ...
+-- Assign to namespace
 ns.Events = Events
-
-return Events

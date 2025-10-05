@@ -20,6 +20,9 @@ Version: 0.1
 -- Get addon namespace
 local addonName, ns = ...
 
+-- Use shared namespace
+ns = _G[addonName] or ns
+
 -- Create options namespace
 ns.Options = ns.Options or {}
 
@@ -638,3 +641,6 @@ function ns.Options.CreateDebugPanel()
     
     return panel
 end
+
+-- Assign to namespace
+ns.Options = Options

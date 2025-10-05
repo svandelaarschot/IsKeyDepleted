@@ -1,11 +1,19 @@
 -- IsKeyDepleted UI Components
 -- Interactive timeline and user interface elements
 
-local addonName = "IsKeyDepleted"
-local UI = {}
+-- Get addon namespace
+local addonName, ns = ...
+
+-- Use shared namespace
+ns = _G[addonName] or ns
+
+-- Create UI namespace
+ns.UI = ns.UI or {}
+
+-- Local reference for easier access
+local UI = ns.UI
 
 -- Import Constants from namespace
-local addonName, ns = ...
 local Constants = ns.Constants
 
 -- UI State
@@ -458,8 +466,5 @@ function UI:MonitorBlizzardTracker()
     end
 end
 
--- Make UI available in namespace
-local addonName, ns = ...
+-- Assign to namespace
 ns.UI = UI
-
-return UI

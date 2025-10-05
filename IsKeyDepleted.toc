@@ -7,9 +7,9 @@
 ## IconTexture: Interface\Icons\keystone_mythic
 ## IconAtlas: keystone_mythic
 
+Constants.lua
 Core.lua
 Player.lua
-Constants.lua
 Events.lua
 UI.lua
 Commands.lua

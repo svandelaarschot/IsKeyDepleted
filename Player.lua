@@ -21,6 +21,9 @@ Version: 0.1
 -- Get addon namespace
 local addonName, ns = ...
 
+-- Use shared namespace
+ns = _G[addonName] or ns
+
 -- Create player namespace
 ns.Player = ns.Player or {}
 
@@ -211,3 +214,6 @@ end
 function ns.Player:ResetPlayerData()
     self:InitializePlayerData()
 end
+
+-- Assign to namespace
+ns.Player = Player

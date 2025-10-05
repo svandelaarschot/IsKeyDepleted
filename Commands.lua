@@ -20,8 +20,14 @@ Version: 0.1
 -- Get addon namespace
 local addonName, ns = ...
 
+-- Use shared namespace
+ns = _G[addonName] or ns
+
 -- Create commands namespace
 ns.Commands = ns.Commands or {}
+
+-- Make Commands globally accessible for slash commands
+_G.IsKeyDepletedCommands = ns.Commands
 
 -- Import other modules from namespace
 local Constants = ns.Constants
@@ -58,14 +64,23 @@ function ns.Commands:RegisterSlashCommands()
     SLASH_ISKEYDEPLETED3 = "/isk"
     
     SlashCmdList["ISKEYDEPLETED"] = function(msg)
-        ns.Commands:HandleCommand(msg)
+        if _G.IsKeyDepletedCommands then
+            _G.IsKeyDepletedCommands:HandleCommand(msg)
+        else
+            print("|cffFF0000IsKeyDepleted|r: Commands module not loaded!")
+        end
     end
+    
+    ns.Core.DebugInfo("Slash commands registered: /%s, /iskd, /isk", Constants.COMMANDS.MAIN)
 end
 
 -- Handle slash commands
 function ns.Commands:HandleCommand(msg)
+    ns.Core.DebugInfo("Slash command received: '%s'", msg or "nil")
     local args = self:ParseCommand(msg)
-    local command = args[1]:lower()
+    local command = args[1] and args[1]:lower() or ""
+    
+    ns.Core.DebugInfo("Parsed command: '%s'", command)
     
     if command == "toggle" or command == "t" then
         self:ToggleUI()
@@ -88,7 +103,7 @@ function ns.Commands:HandleCommand(msg)
     elseif command == "help" or command == "h" or command == "" then
         self:ShowHelp()
     else
-        ns.Core.DebugWarning("Unknown command: %s. Use /iskd help for available commands.", command)
+        ns.Core.DebugWarning("Unknown command: %s. Use /iskd help for available commands.", command or "nil")
     end
 end
 
@@ -259,3 +274,6 @@ function ns.Commands:ShowHelp()
     
     ns.Core.DebugInfo("Help command executed - displayed all available commands and shortcuts")
 end
+
+-- Assign to namespace
+ns.Commands = Commands

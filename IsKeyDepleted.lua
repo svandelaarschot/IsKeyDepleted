@@ -19,8 +19,13 @@ Version: 0.1
 -- Get addon name and namespace from WoW
 local addonName, ns = ...
 
--- Create global namespace for external access
-IsKeyDepleted = ns
+-- Create a shared global namespace
+local sharedNamespace = _G[addonName] or {}
+_G[addonName] = sharedNamespace
+
+-- Make the shared namespace available to all modules
+ns = sharedNamespace
+IsKeyDepleted = sharedNamespace
 
 -- ============================================================================
 -- CORE FUNCTIONS

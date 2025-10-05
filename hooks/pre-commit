@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-commit hook for IsKeyDepleted
+# This runs BEFORE a commit
+
+# Set WoW path
+WOW_PATH="D:/World of Warcraft/_retail_/Interface/AddOns/IsKeyDepleted"
+
+# Copy all .lua and .toc files using PowerShell
+powershell.exe -Command "Copy-Item *.lua '$WOW_PATH' -Force"
+powershell.exe -Command "Copy-Item *.toc '$WOW_PATH' -Force"
+
+exit 0
