@@ -13,8 +13,9 @@ ns.UI = ns.UI or {}
 -- Local reference for easier access
 local UI = ns.UI
 
--- Import Constants from namespace
+-- Import other modules from namespace
 local Constants = ns.Constants
+local Core = ns.Core
 
 -- UI State
 UI.isInitialized = false
@@ -37,7 +38,9 @@ function UI:Initialize()
     self:HideBlizzardTracker()
     
     self.isInitialized = true
-    Core.DebugInfo("UI system initialized")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("UI system initialized")
+    end
 end
 
 -- Create the main frame
@@ -338,7 +341,9 @@ function UI:OnTimelineClick()
     end
     
     -- Show timeline details
-    Core.DebugInfo("Timeline clicked - showing details")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Timeline clicked - showing details")
+    end
     -- TODO: Implement timeline details popup
 end
 
@@ -408,7 +413,9 @@ function UI:HideBlizzardTracker()
     self.blizzardTrackerHidden = true
     
     if hiddenCount > 0 then
-        Core.DebugInfo("Blizzard dungeon tracker hidden (%d frames)", hiddenCount)
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Blizzard dungeon tracker hidden (%d frames)", hiddenCount)
+        end
     end
 end
 
@@ -428,7 +435,9 @@ function UI:ShowBlizzardTracker()
     self.blizzardTrackerHidden = false
     
     if shownCount > 0 then
-        Core.DebugInfo("Blizzard dungeon tracker shown (%d frames)", shownCount)
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Blizzard dungeon tracker shown (%d frames)", shownCount)
+        end
     end
 end
 

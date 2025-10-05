@@ -32,8 +32,9 @@ function Events:Initialize()
     self:RegisterEvents()
     
     self.isInitialized = true
-    Core.DebugInfo("Event system initialized")
-end
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Event system initialized")
+    end
 
 -- Create the event frame
 function Events:CreateEventFrame()
@@ -108,7 +109,9 @@ end
 
 -- Addon loaded event
 function Events:OnAddonLoaded()
-    Core.DebugInfo("Addon loaded successfully")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Addon loaded successfully")
+    end
     -- Initialize other systems
     Core:Initialize()
     UI:Initialize()
@@ -130,20 +133,23 @@ function Events:OnChallengeModeStart()
     if keyLevel and dungeonId then
         Core:StartKeyTracking(keyLevel, dungeonId)
         UI:Show()
-        Core.DebugInfo("Challenge mode started - Key Level %d", keyLevel)
-    end
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Challenge mode started - Key Level %d", keyLevel)
+        end
 end
 
 -- Challenge mode completed event
 function Events:OnChallengeModeCompleted()
     Core:StopKeyTracking("Completed successfully")
-    Core.DebugInfo("Challenge mode completed!")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Challenge mode completed!")
 end
 
 -- Challenge mode reset event
 function Events:OnChallengeModeReset()
     Core:StopKeyTracking("Reset")
-    Core.DebugInfo("Challenge mode reset")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Challenge mode reset")
 end
 
 -- Player death event
@@ -159,36 +165,41 @@ function Events:OnPlayerDead()
     end
     
     Core:AddDeath(deathReason)
-    Core.DebugInfo("Player died - %s", deathReason)
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Player died - %s", deathReason)
 end
 
 -- Player alive event
 function Events:OnPlayerAlive()
     -- Player has been resurrected
-    Core.DebugInfo("Player resurrected")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Player resurrected")
 end
 
 -- Encounter start event
 function Events:OnEncounterStart(encounterID, encounterName, difficultyID, groupSize)
     if encounterName then
-        Core.DebugInfo("Encounter started - %s", encounterName)
-    end
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Encounter started - %s", encounterName)
+        end
 end
 
 -- Encounter end event
 function Events:OnEncounterEnd(encounterID, encounterName, difficultyID, groupSize, success)
     if encounterName and success then
         Core:AddBossKill(encounterName)
-        Core.DebugInfo("Boss defeated - %s", encounterName)
-    end
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Boss defeated - %s", encounterName)
+        end
 end
 
 -- Boss kill event
 function Events:OnBossKill(bossName)
     if bossName then
         Core:AddBossKill(bossName)
-        Core.DebugInfo("Boss killed - %s", bossName)
-    end
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Boss killed - %s", bossName)
+        end
 end
 
 -- Unit died event
@@ -205,7 +216,9 @@ end
 -- Group roster update event
 function Events:OnGroupRosterUpdate()
     -- Update group information if needed
-    Core.DebugInfo("Group roster updated")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Group roster updated")
+    end
 end
 
 -- Manual event triggers for testing

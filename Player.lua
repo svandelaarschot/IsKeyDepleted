@@ -59,7 +59,9 @@ function Player:Initialize()
     self:InitializePlayerData()
     self.isInitialized = true
     
-    Core.DebugInfo("Player module initialized")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Player module initialized")
+    end
 end
 
 --[[

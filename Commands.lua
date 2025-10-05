@@ -55,10 +55,16 @@ end
 
 -- Initialize the command system
 function Commands:Initialize()
-    Core.DebugInfo("Commands:Initialize() called")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Commands:Initialize() called")
+    end
     self:RegisterSlashCommands()
-    Core.DebugInfo("Commands:Initialize() completed")
-    Core.DebugInfo("Command system initialized")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Commands:Initialize() completed")
+    end
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Command system initialized")
+    end
 end
 
 -- Register slash commands

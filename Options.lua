@@ -139,7 +139,9 @@ function Options.Initialize()
         end
     end
     
-    Core.DebugInfo("Options initialized!")
+    if Core and Core.DebugInfo then
+        Core.DebugInfo("Options initialized!")
+    end
 end
 
 --[[
@@ -232,7 +234,9 @@ function Options.RegisterSettings()
         Settings.RegisterCanvasLayoutSubcategory(root, debugPanel, debugPanel.name)
         Settings.RegisterAddOnCategory(root)
         
-        Core.DebugInfo("Settings registered with WoW interface")
+        if Core and Core.DebugInfo then
+            Core.DebugInfo("Settings registered with WoW interface")
+        end
     end
 end
 
@@ -650,5 +654,3 @@ end
 
 -- Assign to namespace
 ns.Options = Options
-
--- Test
