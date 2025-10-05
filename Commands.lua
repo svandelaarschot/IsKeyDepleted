@@ -55,22 +55,35 @@ end
 
 -- Initialize the command system
 function Commands:Initialize()
+    Core.DebugInfo("Commands:Initialize() called")
     self:RegisterSlashCommands()
+    Core.DebugInfo("Commands:Initialize() completed")
     Core.DebugInfo("Command system initialized")
 end
 
 -- Register slash commands
 function Commands:RegisterSlashCommands()
+    Core.DebugInfo("Registering slash commands...")
+    Core.DebugInfo("Constants.COMMANDS.MAIN = %s", Constants.COMMANDS.MAIN)
+    
+    -- Debug: Check if Constants is properly loaded
+    if not Constants or not Constants.COMMANDS then
+        Core.DebugError("Constants.COMMANDS not found! Constants = %s", tostring(Constants))
+        return
+    end
+    
     -- Main command
     SLASH_ISKEYDEPLETED1 = "/" .. Constants.COMMANDS.MAIN
     SLASH_ISKEYDEPLETED2 = "/iskd"
     SLASH_ISKEYDEPLETED3 = "/isk"
     
     SlashCmdList["ISKEYDEPLETED"] = function(msg)
+        Core.DebugInfo("Slash command triggered with message: %s", msg or "nil")
         if _G.IsKeyDepletedCommands then
+            Core.DebugInfo("Commands module found, handling command...")
             _G.IsKeyDepletedCommands:HandleCommand(msg)
         else
-            print("|cffFF0000IsKeyDepleted|r: Commands module not loaded!")
+            Core.DebugError("Commands module not loaded!")
         end
     end
     
@@ -79,6 +92,7 @@ end
 
 -- Handle slash commands
 function Commands:HandleCommand(msg)
+    Core.DebugInfo("HandleCommand called with: %s", msg or "nil")
     Core.DebugInfo("Slash command received: '%s'", msg or "nil")
     local args = self:ParseCommand(msg)
     local command = args[1] and args[1]:lower() or ""

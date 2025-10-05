@@ -27,6 +27,15 @@ _G[addonName] = sharedNamespace
 ns = sharedNamespace
 IsKeyDepleted = sharedNamespace
 
+-- Ensure the namespace is properly initialized
+if not ns.Constants then ns.Constants = {} end
+if not ns.Core then ns.Core = {} end
+if not ns.Commands then ns.Commands = {} end
+if not ns.Events then ns.Events = {} end
+if not ns.UI then ns.UI = {} end
+if not ns.Options then ns.Options = {} end
+if not ns.Player then ns.Player = {} end
+
 -- ============================================================================
 -- CORE FUNCTIONS
 -- ============================================================================
@@ -42,28 +51,28 @@ function ns.Initialize()
         print("|cff39FF14IsKeyDepleted|r:   " .. k .. " (" .. type(v) .. ")")
     end
     
-    -- Check if all modules are available
-    if not ns.Core then
+    -- Check if all modules are available and have Initialize functions
+    if not ns.Core or not ns.Core.Initialize then
         print("|cffFF0000IsKeyDepleted|r: ERROR - Core module not loaded!")
         return
     end
     
-    if not ns.Events then
+    if not ns.Events or not ns.Events.Initialize then
         print("|cffFF0000IsKeyDepleted|r: ERROR - Events module not loaded!")
         return
     end
     
-    if not ns.UI then
+    if not ns.UI or not ns.UI.Initialize then
         print("|cffFF0000IsKeyDepleted|r: ERROR - UI module not loaded!")
         return
     end
     
-    if not ns.Options then
+    if not ns.Options or not ns.Options.Initialize then
         print("|cffFF0000IsKeyDepleted|r: ERROR - Options module not loaded!")
         return
     end
     
-    if not ns.Commands then
+    if not ns.Commands or not ns.Commands.Initialize then
         print("|cffFF0000IsKeyDepleted|r: ERROR - Commands module not loaded!")
         return
     end
@@ -71,6 +80,9 @@ function ns.Initialize()
     -- Initialize core functionality first
     ns.Core.Initialize()
     
+    -- Initialize slash commands
+    ns.Commands.Initialize()
+
     -- Initialize event handling
     ns.Events.Initialize()
     
@@ -80,12 +92,9 @@ function ns.Initialize()
     -- Initialize options/settings
     ns.Options.Initialize()
     
-    -- Initialize slash commands
-    ns.Commands.Initialize()
-    
     -- Notify user of successful initialization
-    print("|cff39FF14IsKeyDepleted|r: All modules initialized!")
-    print("|cff39FF14IsKeyDepleted|r: Use /iskd to toggle the interface")
+    ns.Core.DebugInfo("All modules initialized!")
+    ns.Core.DebugInfo("Use /iskd to toggle the interface")
     ns.Core.DebugInfo("All modules initialized successfully")
 end
 
@@ -191,10 +200,13 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, ...)
     -- Check if this is our addon being loaded
     if event == "ADDON_LOADED" and ... == addonName then
-        -- Initialize all modules
-        ns.Initialize()
-        
-        -- Register settings with WoW interface
-        ns.RegisterSettings()
+        -- Use a small delay to ensure all modules are loaded
+        C_Timer.After(0.1, function()
+            -- Initialize all modules
+            ns.Initialize()
+            
+            -- Register settings with WoW interface
+            ns.RegisterSettings()
+        end)
     end
 end)
