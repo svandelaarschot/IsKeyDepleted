@@ -24,7 +24,7 @@ function Events:Initialize()
     self:RegisterEvents()
     
     self.isInitialized = true
-    print("|cff39FF14IsKeyDepleted|r: Event system initialized")
+    ns.Core.DebugInfo("Event system initialized")
 end
 
 -- Create the event frame
@@ -103,7 +103,7 @@ end
 
 -- Addon loaded event
 function Events:OnAddonLoaded()
-    print("|cff39FF14IsKeyDepleted|r: Addon loaded successfully")
+    ns.Core.DebugInfo("Addon loaded successfully")
     -- Initialize other systems
     Core:Initialize()
     UI:Initialize()
@@ -125,20 +125,20 @@ function Events:OnChallengeModeStart()
     if keyLevel and dungeonId then
         Core:StartKeyTracking(keyLevel, dungeonId)
         UI:Show()
-        print("|cff39FF14IsKeyDepleted|r: Challenge mode started - Key Level " .. keyLevel)
+        ns.Core.DebugInfo("Challenge mode started - Key Level %d", keyLevel)
     end
 end
 
 -- Challenge mode completed event
 function Events:OnChallengeModeCompleted()
     Core:StopKeyTracking("Completed successfully")
-    print("|cff39FF14IsKeyDepleted|r: Challenge mode completed!")
+    ns.Core.DebugInfo("Challenge mode completed!")
 end
 
 -- Challenge mode reset event
 function Events:OnChallengeModeReset()
     Core:StopKeyTracking("Reset")
-    print("|cff39FF14IsKeyDepleted|r: Challenge mode reset")
+    ns.Core.DebugInfo("Challenge mode reset")
 end
 
 -- Player death event
@@ -154,19 +154,19 @@ function Events:OnPlayerDead()
     end
     
     Core:AddDeath(deathReason)
-    print("|cff39FF14IsKeyDepleted|r: Player died - " .. deathReason)
+    ns.Core.DebugInfo("Player died - %s", deathReason)
 end
 
 -- Player alive event
 function Events:OnPlayerAlive()
     -- Player has been resurrected
-    print("|cff39FF14IsKeyDepleted|r: Player resurrected")
+    ns.Core.DebugInfo("Player resurrected")
 end
 
 -- Encounter start event
 function Events:OnEncounterStart(encounterID, encounterName, difficultyID, groupSize)
     if encounterName then
-        print("|cff39FF14IsKeyDepleted|r: Encounter started - " .. encounterName)
+        ns.Core.DebugInfo("Encounter started - %s", encounterName)
     end
 end
 
@@ -174,7 +174,7 @@ end
 function Events:OnEncounterEnd(encounterID, encounterName, difficultyID, groupSize, success)
     if encounterName and success then
         Core:AddBossKill(encounterName)
-        print("|cff39FF14IsKeyDepleted|r: Boss defeated - " .. encounterName)
+        ns.Core.DebugInfo("Boss defeated - %s", encounterName)
     end
 end
 
@@ -182,7 +182,7 @@ end
 function Events:OnBossKill(bossName)
     if bossName then
         Core:AddBossKill(bossName)
-        print("|cff39FF14IsKeyDepleted|r: Boss killed - " .. bossName)
+        ns.Core.DebugInfo("Boss killed - %s", bossName)
     end
 end
 
@@ -192,7 +192,7 @@ function Events:OnUnitDied(unitID)
     if unitID and (unitID:find("party") or unitID:find("raid")) then
         local unitName = UnitName(unitID)
         if unitName then
-            print("|cff39FF14IsKeyDepleted|r: Party member died - " .. unitName)
+            ns.Core.DebugInfo("Party member died - %s", unitName)
         end
     end
 end
@@ -209,7 +209,7 @@ end
 -- Group roster update event
 function Events:OnGroupRosterUpdate()
     -- Update group information if needed
-    print("|cff39FF14IsKeyDepleted|r: Group roster updated")
+    ns.Core.DebugInfo("Group roster updated")
 end
 
 -- Manual event triggers for testing

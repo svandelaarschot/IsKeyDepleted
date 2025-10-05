@@ -130,7 +130,7 @@ function ns.Options.Initialize()
         end
     end
     
-    print("|cff39FF14IsKeyDepleted|r: Options initialized!")
+    ns.Core.DebugInfo("Options initialized!")
 end
 
 --[[
@@ -223,7 +223,7 @@ function ns.Options.RegisterSettings()
         Settings.RegisterCanvasLayoutSubcategory(root, debugPanel, debugPanel.name)
         Settings.RegisterAddOnCategory(root)
         
-        print("|cff39FF14IsKeyDepleted|r: Settings registered with WoW interface")
+        ns.Core.DebugInfo("Settings registered with WoW interface")
     end
 end
 

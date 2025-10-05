@@ -29,7 +29,7 @@ function UI:Initialize()
     self:HideBlizzardTracker()
     
     self.isInitialized = true
-    print("|cff39FF14IsKeyDepleted|r: UI system initialized")
+    ns.Core.DebugInfo("UI system initialized")
 end
 
 -- Create the main frame
@@ -335,7 +335,7 @@ function UI:OnTimelineClick()
     end
     
     -- Show timeline details
-    print("|cff39FF14IsKeyDepleted|r: Timeline clicked - showing details")
+    ns.Core.DebugInfo("Timeline clicked - showing details")
     -- TODO: Implement timeline details popup
 end
 
@@ -405,7 +405,7 @@ function UI:HideBlizzardTracker()
     self.blizzardTrackerHidden = true
     
     if hiddenCount > 0 then
-        print("|cff39FF14IsKeyDepleted|r: Blizzard dungeon tracker hidden (" .. hiddenCount .. " frames)")
+        ns.Core.DebugInfo("Blizzard dungeon tracker hidden (%d frames)", hiddenCount)
     end
 end
 
@@ -425,7 +425,7 @@ function UI:ShowBlizzardTracker()
     self.blizzardTrackerHidden = false
     
     if shownCount > 0 then
-        print("|cff39FF14IsKeyDepleted|r: Blizzard dungeon tracker shown (" .. shownCount .. " frames)")
+        ns.Core.DebugInfo("Blizzard dungeon tracker shown (%d frames)", shownCount)
     end
 end
 

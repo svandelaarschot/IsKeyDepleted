@@ -49,6 +49,7 @@ function ns.Initialize()
     -- Notify user of successful initialization
     print("|cff39FF14IsKeyDepleted|r: All modules initialized!")
     print("|cff39FF14IsKeyDepleted|r: Use /iskd to toggle the interface")
+    ns.Core.DebugInfo("All modules initialized successfully")
 end
 
 --[[
